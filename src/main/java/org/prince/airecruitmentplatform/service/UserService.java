@@ -18,6 +18,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     public User register(RegisterRequest request) {
         User user = User.builder()
@@ -32,6 +33,7 @@ public class UserService {
     }
 
     public LoginResponse login(LoginRequest request) {
+
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -39,7 +41,9 @@ public class UserService {
             throw new RuntimeException("Invalid password");
         }
 
-        return new LoginResponse("Login Successful");
+        String token = jwtService.generateToken(user.getEmail());
+
+        return new LoginResponse(token);
     }
 
 }

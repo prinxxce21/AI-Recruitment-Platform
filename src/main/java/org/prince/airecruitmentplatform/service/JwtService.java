@@ -23,4 +23,8 @@ public class JwtService {
                 .compact();
     }
 
+    private String extractUsername(String token) {
+
+    }
+
 }
