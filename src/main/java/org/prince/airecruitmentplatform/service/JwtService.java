@@ -1,10 +1,14 @@
 package org.prince.airecruitmentplatform.service;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.security.Keys;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+
 import java.util.Date;
+import java.util.function.Function;
+
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,8 +27,37 @@ public class JwtService {
                 .compact();
     }
 
-    private String extractUsername(String token) {
-            return null;
+    private Claims extractClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        Claims claims = extractClaims(token);
+        return claimsResolver.apply(claims);
+    }
+
+    private  String extractUsername(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    private Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
+    }
+
+    private Boolean isTokenExpired(String token){
+        return extractExpiration(token).before(new Date());
+    }
+
+    // in the below method isTokenValid() why we use UserDetails?
+    // Spring security gives us a Userdetails object representing the authenticated user's information.
+
+    private Boolean isTokenValid(String token, UserDetails userDetails){
+        String username = extractUsername(token);
+        return username.equals(userDetails.getUsername()) &&  !isTokenExpired(token);
     }
 
 }
