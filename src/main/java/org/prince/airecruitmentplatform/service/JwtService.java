@@ -40,7 +40,7 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    private  String extractUsername(String token) {
+    public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -48,14 +48,14 @@ public class JwtService {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    private Boolean isTokenExpired(String token){
+    private boolean isTokenExpired(String token){
         return extractExpiration(token).before(new Date());
     }
 
     // in the below method isTokenValid() why we use UserDetails?
     // Spring security gives us a Userdetails object representing the authenticated user's information.
 
-    private Boolean isTokenValid(String token, UserDetails userDetails){
+    public boolean isTokenValid(String token, UserDetails userDetails){
         String username = extractUsername(token);
         return username.equals(userDetails.getUsername()) &&  !isTokenExpired(token);
     }

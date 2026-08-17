@@ -2,6 +2,8 @@ package org.prince.airecruitmentplatform.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.prince.airecruitmentplatform.dto.LoginRequest;
+import org.prince.airecruitmentplatform.dto.LoginResponse;
 import org.prince.airecruitmentplatform.dto.RegisterRequest;
 import org.prince.airecruitmentplatform.entity.User;
 import org.prince.airecruitmentplatform.service.UserService;
@@ -27,6 +29,11 @@ public class AuthController {
 
         return userService.register(request);
 
+    }
+
+    @PostMapping("/login")
+    public LoginResponse login(@RequestBody LoginRequest request) {
+        return userService.login(request);
     }
 
 }
