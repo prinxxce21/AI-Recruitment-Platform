@@ -26,5 +26,15 @@ public class ResumeController {
     public List<ResumeResponse> getResumes() {
         return resumeService.getMyResumes();
     }
+
+    @GetMapping("/{id}")
+    public ResumeResponse getResumeById(@PathVariable Long id){
+        return resumeService.getResumeById(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteResume(@PathVariable Long id) throws IOException {
+        resumeService.deleteResume(id);
+    }
 }
 

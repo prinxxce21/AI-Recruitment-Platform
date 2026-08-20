@@ -90,4 +90,36 @@ public class ResumeService {
                 .toList();
         return response;
     }
+
+    public ResumeResponse getResumeById(Long id){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String email = userDetails.getUsername();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Resume resume = resumeRepository.findByIdAndUser(id, user)
+                .orElseThrow(() -> new RuntimeException("Resume not found"));
+
+        return new ResumeResponse(
+                resume.getId(),
+                resume.getResumeName(),
+                resume.getFilePath(),
+                resume.getUploadedAt()
+        );
+    }
+
+    public void deleteResume(Long id) throws IOException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String email = userDetails.getUsername();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        Resume resume = resumeRepository.findByIdAndUser(id, user)
+                .orElseThrow(() -> new RuntimeException("Resume not found"));
+
+        Path filePath = Paths.get(resume.getFilePath());
+        Files.deleteIfExists(filePath);
+        resumeRepository.delete(resume);
+    }
 }
