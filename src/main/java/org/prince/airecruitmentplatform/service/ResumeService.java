@@ -1,6 +1,7 @@
 package org.prince.airecruitmentplatform.service;
 
 import lombok.RequiredArgsConstructor;
+import org.prince.airecruitmentplatform.dto.ResumeResponse;
 import org.prince.airecruitmentplatform.entity.Resume;
 import org.prince.airecruitmentplatform.entity.User;
 import org.prince.airecruitmentplatform.repository.ResumeRepository;
@@ -23,7 +24,7 @@ public class ResumeService {
     private final ResumeRepository resumeRepository;
     private final UserRepository userRepository;
 
-    public Resume uploadResume(MultipartFile file) throws IOException {
+    public ResumeResponse uploadResume(MultipartFile file) throws IOException {
 
 //        Gets the upladed fileName.
         String fileName = file.getOriginalFilename();
@@ -55,8 +56,15 @@ public class ResumeService {
 
         resume.setFilePath(savedFilePath.toString());
 
-        return resumeRepository.save(resume);
+        Resume savedResume = resumeRepository.save(resume);
 //        save the file and then it's metadata.
+
+        return new ResumeResponse(
+                savedResume.getId(),
+                savedResume.getResumeName(),
+                savedResume.getFilePath(),
+                savedResume.getUploadedAt()
+        );
     }
 
 }

@@ -1,6 +1,7 @@
 package org.prince.airecruitmentplatform.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.prince.airecruitmentplatform.dto.ResumeResponse;
 import org.prince.airecruitmentplatform.entity.Resume;
 import org.prince.airecruitmentplatform.service.ResumeService;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +20,7 @@ public class ResumeController {
     private final ResumeService resumeService;
 
     @PostMapping
-    public Resume uploadResume(@RequestParam("file")MultipartFile file) throws IOException {
+    public ResumeResponse uploadResume(@RequestParam("file")MultipartFile file) throws IOException {
         return resumeService.uploadResume(file);
     }
 }
