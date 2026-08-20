@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +42,7 @@ public class ResumeService {
 
 //        Gets our actual user entity.
         User user = userRepository.findByEmail(email)
-                .orElseThrow(()-> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
 //        Creates the resume object
         Resume resume = Resume.builder()
@@ -65,6 +67,27 @@ public class ResumeService {
                 savedResume.getFilePath(),
                 savedResume.getUploadedAt()
         );
+
     }
 
+    public List<ResumeResponse> getMyResumes(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+        String email = userDetails.getUsername();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<Resume> resumes = resumeRepository.findByUser(user);
+        List<ResumeResponse> response = resumes.stream()
+                .map(resume -> new ResumeResponse(
+                        resume.getId(),
+                        resume.getResumeName(),
+                        resume.getFilePath(),
+                        resume.getUploadedAt()
+                ))
+                .toList();
+        return response;
+    }
 }
